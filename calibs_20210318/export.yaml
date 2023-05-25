@@ -1,0 +1,110 @@
+description: Butler Data Repository Export
+version: 1.0.2
+universe_version: 3
+universe_namespace: daf_butler
+data:
+- type: dimension
+  element: instrument
+  records:
+  - name: DECam
+    visit_max: 33554432
+    visit_system: 0
+    exposure_max: 33554432
+    detector_max: 100
+    class_name: lsst.obs.decam.DarkEnergyCamera
+- type: dimension
+  element: detector
+  records:
+  - instrument: DECam
+    id: 35
+    full_name: N4
+    name_in_raft: '4'
+    raft: N
+    purpose: SCIENCE
+- type: dimension
+  element: physical_filter
+  records:
+  - instrument: DECam
+    name: i DECam SDSS c0003 7835.0 1470.0
+    band: i
+- type: collection
+  collection_type: CALIBRATION
+  name: DECam/calib/bias/20210318
+- type: collection
+  collection_type: RUN
+  name: DECam/calib/bias/master/20210318/20230523T202149Z
+  host: null
+  timespan_begin: null
+  timespan_end: null
+- type: collection
+  collection_type: CALIBRATION
+  name: DECam/calib/flat/20210318
+- type: collection
+  collection_type: RUN
+  name: DECam/calib/flat/master/20210318/20230523T202441Z
+  host: null
+  timespan_begin: null
+  timespan_end: null
+- type: collection
+  collection_type: CHAINED
+  name: DECam/calib/20210318
+  children:
+  - DECam/calib/bias/20210318
+  - DECam/calib/flat/20210318
+- type: dataset_type
+  name: bias
+  dimensions:
+  - instrument
+  - detector
+  storage_class: ExposureF
+  is_calibration: true
+- type: dataset
+  dataset_type: bias
+  run: DECam/calib/bias/master/20210318/20230523T202149Z
+  records:
+  - dataset_id:
+    - !uuid '02d65288-078b-46b4-8feb-7dee378f90af'
+    data_id:
+    - instrument: DECam
+      detector: 35
+    path: DECam/calib/bias/master/20210318/20230523T202149Z/bias/bias_DECam_N4_DECam_calib_bias_master_20210318_20230523T202149Z.fits
+    formatter: lsst.obs.base.formatters.fitsExposure.FitsExposureFormatter
+- type: dataset_type
+  name: flat
+  dimensions:
+  - band
+  - instrument
+  - detector
+  - physical_filter
+  storage_class: ExposureF
+  is_calibration: true
+- type: dataset
+  dataset_type: flat
+  run: DECam/calib/flat/master/20210318/20230523T202441Z
+  records:
+  - dataset_id:
+    - !uuid '8c2d56f5-066a-44ef-84a8-ed3e50969740'
+    data_id:
+    - instrument: DECam
+      detector: 35
+      physical_filter: i DECam SDSS c0003 7835.0 1470.0
+    path: DECam/calib/flat/master/20210318/20230523T202441Z/flat/i/i_DECam_SDSS_c0003_7835.0_1470.0/flat_DECam_i_i_DECam_SDSS_c0003_7835_0_1470_0_N4_DECam_calib_flat_master_20210318_20230523T202441Z.fits
+    formatter: lsst.obs.base.formatters.fitsExposure.FitsExposureFormatter
+- type: associations
+  collection: DECam/calib/bias/20210318
+  collection_type: CALIBRATION
+  validity_ranges:
+  - timespan: !lsst.daf.butler.Timespan
+      begin: null
+      end: null
+    dataset_ids:
+    - !uuid '02d65288-078b-46b4-8feb-7dee378f90af'
+- type: associations
+  collection: DECam/calib/flat/20210318
+  collection_type: CALIBRATION
+  validity_ranges:
+  - timespan: !lsst.daf.butler.Timespan
+      begin: null
+      end: null
+    dataset_ids:
+    - !uuid '8c2d56f5-066a-44ef-84a8-ed3e50969740'
