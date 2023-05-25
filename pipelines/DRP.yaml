@@ -1,0 +1,208 @@
+description: >
+  Pipeline for processing data from the DECam DDF survey
+imports:
+  - location: ${DRP_PIPE_DIR}/ingredients/DECam/DRP.yaml
+
+tasks:
+  isr:
+    class: lsst.ip.isr.IsrTask
+    config:
+      overscan.fitType: MEDIAN_PER_ROW
+      doFringe: false
+  calibrate:
+    class: lsst.pipe.tasks.calibrate.CalibrateTask 
+  makeWarp:
+    class: lsst.pipe.tasks.makeCoaddTempExp.MakeWarpTask
+    config:
+      doApplyExternalPhotoCalib: false # disable jointcal
+      doApplyExternalSkyWcs: false # disable jointcal
+      doApplyFinalizedPsf: false # disable finalized PSF fitting
+  imageDifference:
+    class: lsst.pipe.tasks.imageDifference.ImageDifferenceFromTemplateTask
+    config:
+      doApplyFinalizedPsf: false # disable finalized PSF fitting
+  templateGen:
+    class: lsst.pipe.tasks.assembleCoadd.CompareWarpAssembleCoaddTask
+    config:
+      doApplyExternalPhotoCalib: false # disable jointcal
+      doApplyExternalSkyWcs: false # disable jointcal
+  assembleCoadd:
+    class: lsst.pipe.tasks.assembleCoadd.CompareWarpAssembleCoaddTask
+    config:
+      doApplyExternalPhotoCalib: false # disable jointcal
+      doApplyExternalSkyWcs: false # disable jointcal
+  measure:
+    class: lsst.pipe.tasks.multiBand.MeasureMergedCoaddSourcesTask
+    config:
+      doPropagateFlags: false # since we have disabled finalCharacterization, this removes those requisite inputs
+
+subsets:
+  isrAndChar:
+    subset:
+      - isr
+      - characterizeImage
+    description: |
+      per-detector
+      Run after: step0
+      Perform ISR and characterizeImage
+  calibrateAndSources:
+    subset:
+      - calibrate
+      - transformSourceTable
+    description: |
+      per-detector
+      Run after: isrAndChar
+      Make calexp and manipulate sources
+  consolidateSourcesAndVisits:
+    subset:
+      - consolidateSourceTable
+      - consolidateVisitSummary
+    description: |
+      per-visit
+      Run after: calibrateAndSources
+      Make a binned focal plane mosaic for each visit
+  _makeWarp:
+    subset:
+      - makeWarp
+    description: |
+      per-visit
+      Run after: consolidateSourcesAndVisits
+      make direct and psf-matched warp
+  makeCoadd:
+    subset:
+      - selectGoodSeeingVisits
+      - assembleCoadd
+      - templateGen
+    description: |
+      per-patch
+      Run after: makeWarp
+      Make a deep coadd from all exposures and a difference image template 
+      from good seeing exposures.
+  measureCoadd:
+    subset:
+      - detection
+      - mergeDetections
+      - deblend
+      - measure
+      - mergeMeasurements
+      - forcedPhotCoadd
+      - writeObjectTable
+      - transformObjectTable
+      - consolidateObjectTable
+    description: |
+      per-patch
+      Run after: makeCoadd
+      Detect and measure sources on coadd
+  _getTemplate:
+    subset:
+      - getTemplate
+    description: |
+      per-detector
+      Run after: makeCoadd
+      Construct template from coadd
+  diffim:
+    subset:
+      - imageDifference
+      - consolidateDiaSourceTable
+      - transformDiaSourceCat
+    description: |
+      per-detector
+      Run after: getTemplate
+      Create difference image from template and measure sources, 
+      consolidate sources
+  _forcedPhotDiffim:
+    subset:
+      - forcedPhotDiffim
+    description: |
+      per-detector
+      Run after: measureCoadd and diffim
+      Measure coadd sources on diffim
+  associateDiaSources:
+    subset:
+      - drpAssociation
+      - drpDiaCalculation
+      - consolidateAssocDiaSourceTable
+      - consolidateFullDiaObjectTable
+    description: |
+      per-patch
+      Run after: diffim
+      dia objects association, defined per patch and tract
+  forcedPhotDiaObjects:
+    subset:
+      - forcedPhotCcdOnDiaObjects
+      - forcedPhotDiffOnDiaObjects
+    description: |
+      per-detector
+      Run after: associateDiaSources
+      Forced photometry of tract-level dia objects on difference images and calexp
+  
+  step0:
+    subset:
+      - isrForCrosstalkSources
+    description: |
+      Tasks which should be run once, prior to initial data processing.
+      This step generates crosstalk sources for ISR/inter-chip crosstalk by
+      applying overscan correction on raw frames. A new dataset is written,
+      which should be used as an input for further data processing.
+  step1:
+    subset:
+      - isr
+      - characterizeImage
+      - calibrate
+      - transformSourceTable
+    description: |
+      Per-detector tasks that can be run together to start the DRP pipeline.
+      These should never be run with 'tract' or 'patch' as part of the data ID
+      expression if any later steps will also be run, because downstream steps
+      require full visits and 'tract' and 'patch' constraints will always
+      select partial visits that overlap that region.
+  step2:
+    subset:
+      - consolidateSourceTable
+      - consolidateVisitSummary
+      - isolatedStarAssociation
+      # - finalizeCharacterization # takes too long right now
+    description: |
+      Per-visit tasks that can be run together, but only after 'step1'.
+      These should never be run with 'tract' or 'patch' as part of the data ID
+      expression.
+  step3:
+    subset:
+      - selectGoodSeeingVisits
+      # - jointcal # remove jointcal, takes too long and issues with dense fields
+      - makeWarp
+      - templateGen
+      - deblend
+      - detection
+      - writeObjectTable
+      - measure
+      - mergeMeasurements
+      - assembleCoadd
+      - forcedPhotCoadd
+      - transformObjectTable
+      - consolidateObjectTable
+      - mergeDetections
+    description: |
+      Tract-level tasks that can be run together, but only after the 'step1'
+      and 'step2' subsets.
+      These should be run with explicit 'tract' constraints essentially all the
+      time, because otherwise quanta will be created for jobs with only partial visit
+      coverage.
+  diffimDRP:
+    subset:
+      # - selectGoodSeeingVisits # these two are handled in step3
+      # - templateGen
+      - getTemplate
+      - imageDifference
+      - transformDiaSourceCat
+      - consolidateDiaSourceTable
+      - drpAssociation
+      - drpDiaCalculation
+      - forcedPhotDiffim
+      - forcedPhotCcdOnDiaObjects
+      - forcedPhotDiffOnDiaObjects
+    description: >
+      Subset for running image differencing branch of the DRP pipeline
+  
+# contracts:
+#   - visualizeBinned.connections.outputExp == visualizeMosaic.connections.inputExps
