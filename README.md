@@ -14,6 +14,8 @@ catalog data necessary to process the `N4` detector of
 DECam `i` filter data taken on the night of 18.03.2021
 for the DDDF survey.
 
+The repository uses Git LFS to provide the data.
+
 To run the processing execute 
 
 ```bash
@@ -21,6 +23,11 @@ git clone https://github.com/dirac-institute/kbmod_imdiff_recipe.git
 cd kbmod_imdiff_recipe
 scripts/create_imdiffs.sh
 ```
+
+The processing will produce the calibrated exposures, calexp,
+good seeing coadds, and good seeing image differenced 
+exposures of sufficient quality to test the KBMOD 
+functionality.
 
 # Content
 
