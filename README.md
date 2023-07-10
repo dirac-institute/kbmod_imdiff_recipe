@@ -86,7 +86,7 @@ pointings on the sky in the same night named cosmos 1, 2 and
 3. The following table lays out which FITS files belong
 to which.
 
-        Filename              |  Target
+Filename                      |  Target
 ------------------------------|---------
 c4d_210319_003928_ori.fits.fz | cosmos_1
 c4d_210319_024310_ori.fits.fz | cosmos_1
