@@ -66,7 +66,7 @@ For convenience the `scripts/download_and_trim_data.sh`
 should preform the same action. The directories should
 contain the following data:
 
-                         SCIENCE RAW
+####                         SCIENCE RAW
 
 i  |  md5sum                          |  ifilter                         |  proposal  |  caldat    |  archive_filename
 ---|----------------------------------|----------------------------------|------------|------------|------------------------------------------------------------------------
@@ -150,7 +150,7 @@ Data Butler, and then exported for Gen 3 Rubin Data Butler
 use. Because the reference catalogs in question use the same
 HTM order the shard IDS for the catalogs are identical.
 
-                          Shard IDs that overlap the exposures
+####                          Shard IDs that overlap the exposures
 
 | ID       |
 | ---------|
