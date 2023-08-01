@@ -7,8 +7,6 @@ imports:
       - processCcd
       - transformDiaSrcCat
       - diaPipe
-parameters:
-  coaddName: deep
 subsets:
 # apPipe must be redefined from $AP_PIPE_DIR/pipelines/ApPipe.yaml because
 # its processCcd was excluded.

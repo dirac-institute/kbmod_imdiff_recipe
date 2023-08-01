@@ -4,6 +4,13 @@
 ############################################################
 
 ###
+# RESOURCES
+##
+# Number of processes to use
+J=28
+
+
+###
 # CREATE REPO, REGISTER INSTRUMENT
 ##
 
@@ -31,7 +38,7 @@ butler import dataRepo trimmedRefcats --export-file trimmedRefcats/gaia_export_g
 butler write-curated-calibrations dataRepo "DECam"
 
 # import the trimmed raw science exposures we have
-butler ingest-raws dataRepo trimmedRawData/210318/science/ --transfer link --output-run "DECam/raw/20210318" -j 28
+butler ingest-raws dataRepo trimmedRawData/210318/science/ --transfer link --output-run "DECam/raw/20210318" -j $J
 
 
 ###
@@ -53,7 +60,7 @@ pipetask run \
     -o "DECam/raw/crosstalk/20210318" \
     -p ${AP_PIPE_DIR}/pipelines/DarkEnergyCamera/RunIsrForCrosstalkSources.yaml \
     --register-dataset-types \
-    -j 28 2>&1 | tee processing_logs/crosstalk.log
+    -j $J 2>&1 | tee processing_logs/crosstalk.log
 
 # Then we calibrate and characterize images (make calexps)
 # Use AP PIPE workflows because of all the config overrides: 
@@ -65,7 +72,7 @@ pipetask --long-log run \
     -o "DECam/calexp/20210318" \
     -p ${AP_PIPE_DIR}/pipelines/DarkEnergyCamera/ProcessCcd.yaml \
     --register-dataset-types \
-    -j 28 2>&1 | tee processing_logs/process_ccd.log
+    -j $J 2>&1 | tee processing_logs/process_ccd.log
 
 # then we can create a skymap 
 butler make-discrete-skymap dataRepo lsst.obs.decam.DarkEnergyCamera --collections "DECam/calexp/20210318" --skymap-id "skymap/20210318"
@@ -80,7 +87,7 @@ pipetask run \
     -o "DECam/coadd/20210318" \
     -p pipelines/coadd.yaml \
     --register-dataset-types \
-    -j 28 2>&1 | tee processing_logs/coadd.log
+    -j $J 2>&1 | tee processing_logs/coadd.log
 
 
 # Finally we build imdiffs and imdiffed warps
@@ -91,7 +98,7 @@ pipetask run \
     -o "DECam/imdiff/20210318" \
     -p pipelines/imdiff.yaml \
     --register-dataset-types \
-    -j 28 2>&1 | tee processing_logs/imdiff.log
+    -j $J 2>&1 | tee processing_logs/imdiff.log
 
 # then we can build the coadd(s)
 # two of them - for each target object really
@@ -102,7 +109,7 @@ pipetask run \
 #    -o "DECam/coadd/20210318" \
 #    -p scripts/Imdiff.yaml \
 #    --register-dataset-types \
-#    -j 28 2>&1 | tee processing_logs/coadd.log
+#    -j $J 2>&1 | tee processing_logs/coadd.log
 
 
 # Then we can run the whole DRP pipeline, although this will 
@@ -115,6 +122,6 @@ pipetask run \
 #    -p ${DRP_PIPE_DIR}/ingredients/DECam/DRP.yaml \
 #    --register-dataset-types \
 #    --long-log \
-#    -j 28 2>&1 | tee processing_logs/drp.log
+#    -j $J 2>&1 | tee processing_logs/drp.log
 
 
