@@ -525,7 +525,7 @@ if __name__=="__main__":
     parser.add_argument(
         "--strategy",
         help=(
-            "Optional keyword arguments passed to the constructor of CompImageHDU. ",
+            "Optional keyword arguments passed to the constructor of CompImageHDU. "
             "Comma separated list of key=val values, f.e. key1=val1,key2=val2 etc."
         ),
         nargs="?", default=None, dest="strategy"
