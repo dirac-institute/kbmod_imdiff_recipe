@@ -1,0 +1,277 @@
+description: Butler Data Repository Export
+version: 1.0.1
+data:
+- type: collection
+  collection_type: RUN
+  name: refcats/gen2
+  host: null
+  timespan_begin: null
+  timespan_end: null
+- type: dataset_type
+  name: ps1_pv3_3pi_20170110
+  dimensions:
+  - htm7
+  storage_class: SimpleCatalog
+  is_calibration: false
+- type: dataset
+  dataset_type: ps1_pv3_3pi_20170110
+  run: refcats/gen2
+  records:
+  - dataset_id:
+    - 15786
+    data_id:
+    - htm7: 231812
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231812.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 77752
+    data_id:
+    - htm7: 231813
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231813.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 36700
+    data_id:
+    - htm7: 231815
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231815.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 82414
+    data_id:
+    - htm7: 231816
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231816.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 60703
+    data_id:
+    - htm7: 231818
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231818.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 125751
+    data_id:
+    - htm7: 231819
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231819.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 77219
+    data_id:
+    - htm7: 231820
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231820.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 83860
+    data_id:
+    - htm7: 231829
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231829.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 48776
+    data_id:
+    - htm7: 231832
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231832.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 83726
+    data_id:
+    - htm7: 232344
+    path: refcats/gen2/ps1_pv3_3pi_20170110/232344.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 17164
+    data_id:
+    - htm7: 231834
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231834.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 26931
+    data_id:
+    - htm7: 231835
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231835.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 49271
+    data_id:
+    - htm7: 231836
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231836.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 122417
+    data_id:
+    - htm7: 232345
+    path: refcats/gen2/ps1_pv3_3pi_20170110/232345.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 2869
+    data_id:
+    - htm7: 232347
+    path: refcats/gen2/ps1_pv3_3pi_20170110/232347.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 79981
+    data_id:
+    - htm7: 231844
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231844.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 80952
+    data_id:
+    - htm7: 231845
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231845.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 27620
+    data_id:
+    - htm7: 231846
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231846.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 90592
+    data_id:
+    - htm7: 231847
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231847.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 107114
+    data_id:
+    - htm7: 231848
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231848.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 72912
+    data_id:
+    - htm7: 231849
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231849.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 22946
+    data_id:
+    - htm7: 231850
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231850.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 23983
+    data_id:
+    - htm7: 231851
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231851.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 26035
+    data_id:
+    - htm7: 231852
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231852.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 122820
+    data_id:
+    - htm7: 231853
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231853.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 50211
+    data_id:
+    - htm7: 231854
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231854.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 52200
+    data_id:
+    - htm7: 231855
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231855.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 81629
+    data_id:
+    - htm7: 231856
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231856.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 28306
+    data_id:
+    - htm7: 231857
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231857.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 48398
+    data_id:
+    - htm7: 231858
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231858.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 18734
+    data_id:
+    - htm7: 231859
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231859.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 5635
+    data_id:
+    - htm7: 231860
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231860.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 86795
+    data_id:
+    - htm7: 231861
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231861.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 24698
+    data_id:
+    - htm7: 231862
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231862.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 128895
+    data_id:
+    - htm7: 231863
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231863.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 70306
+    data_id:
+    - htm7: 231864
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231864.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 117434
+    data_id:
+    - htm7: 231865
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231865.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 81346
+    data_id:
+    - htm7: 231866
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231866.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 80070
+    data_id:
+    - htm7: 231867
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231867.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 62460
+    data_id:
+    - htm7: 231868
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231868.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 64782
+    data_id:
+    - htm7: 231869
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231869.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 35096
+    data_id:
+    - htm7: 231870
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231870.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
+  - dataset_id:
+    - 130077
+    data_id:
+    - htm7: 231871
+    path: refcats/gen2/ps1_pv3_3pi_20170110/231871.fits
+    formatter: lsst.obs.base.formatters.fitsGeneric.FitsGenericFormatter
