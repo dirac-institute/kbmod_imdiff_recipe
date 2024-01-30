@@ -4,10 +4,18 @@ description: Coaddition
 
 instrument: lsst.obs.decam.DarkEnergyCamera
 imports:
-  - location: $AP_PIPE_DIR/pipelines/ApTemplate.yaml
+  - location: $AP_PIPE_DIR/pipelines/DarkEnergyCamera/ApTemplate.yaml
     exclude:  
       - processCcd
 tasks:
+  makeWarp:
+    class: lsst.pipe.tasks.makeWarp.MakeWarpTask
+    config:
+      doApplySkyCorr: false
+      doApplyExternalSkyWcs: false # requires finalVisitSummary input
+      doApplyExternalPhotoCalib: false # requires finalVisitSummary input
+      doApplyFinalizedPsf: false # requires finalVisitSummary input
+      connections.visitSummary: visitSummary
   assembleCoadd:
     class: lsst.pipe.tasks.assembleCoadd.CompareWarpAssembleCoaddTask
       

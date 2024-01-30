@@ -2,7 +2,7 @@ description: Image differencing
 
 instrument: lsst.obs.decam.DarkEnergyCamera
 imports:
-  - location: $AP_PIPE_DIR/pipelines/ApPipe.yaml
+  - location: $AP_PIPE_DIR/pipelines/DarkEnergyCamera/ApPipe.yaml
     exclude:  # don't run processccd since we already made calexps
       - processCcd
       - transformDiaSrcCat

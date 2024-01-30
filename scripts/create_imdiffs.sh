@@ -7,7 +7,7 @@
 # RESOURCES
 ##
 # Number of processes to use
-J=28
+J=8
 
 
 ###
@@ -77,7 +77,6 @@ pipetask --long-log run \
 # then we can create a skymap 
 butler make-discrete-skymap dataRepo lsst.obs.decam.DarkEnergyCamera --collections "DECam/calexp/20210318" --skymap-id "skymap/20210318"
 
-
 # Now we build the coadds, we build imdiff templates 
 # out of these, these also build the warps
 pipetask run \
@@ -99,29 +98,4 @@ pipetask run \
     -p pipelines/imdiff.yaml \
     --register-dataset-types \
     -j $J 2>&1 | tee processing_logs/imdiff.log
-
-# then we can build the coadd(s)
-# two of them - for each target object really
-#pipetask --long-log run \
-#    -b dataRepo \
-#    -d "instrument='DECam' and detector=35" \
-#    -i "DECam/calexp/20210318,skymap/20210318" \
-#    -o "DECam/coadd/20210318" \
-#    -p scripts/Imdiff.yaml \
-#    --register-dataset-types \
-#    -j $J 2>&1 | tee processing_logs/coadd.log
-
-
-# Then we can run the whole DRP pipeline, although this will 
-# produce more results than required for pure KBMOD run
-#pipetask run \
-#    -b dataRepo \
-#    -d "instrument='DECam' and detector=35" \
-#    -i "DECam/raw/20210318,DECam/calib/20210318,DECam/calib,refcats/gen2" \
-#    -o "DECam/drp/20210318" \
-#    -p ${DRP_PIPE_DIR}/ingredients/DECam/DRP.yaml \
-#    --register-dataset-types \
-#    --long-log \
-#    -j $J 2>&1 | tee processing_logs/drp.log
-
 
