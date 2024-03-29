@@ -1,0 +1,61 @@
+description: |
+  A recipe of how to define a minimal task that will process
+  data from raw to image differences. The processing is broken
+  into 2 steps: calexp and imdiff.
+
+  Calexp step includes ISR, characterize and calibrate tasks and
+  consolidates the visit summary at the end.
+  After this step a skymap needs to be created for the following
+  step to work.
+  Imdiff step then takes data from Calexp step, creates warps,
+  templates (coadds) and then subtracts the templates from warps.
+imports:
+  - ${DRP_PIPE_DIR}/pipelines/DECam/DRP-Merian.yaml
+
+tasks:
+  calibrate:
+    class: lsst.pipe.tasks.calibrate.CalibrateTask
+    config:
+      astromRefObjLoader.anyFilterMapsToThis: "phot_g_mean" # gaia refcats flux columns are phot_g_mean_flux, phot_bp_mean_flux, phot_rp_mean_flux # https://www.cosmos.esa.int/web/gaia/iow_20180316
+      photoRefObjLoader.filterMap:
+        VR: "r" # ps1 refcats flux columns are g_flux, r_flux, i_flux, z_flux, y_flux # https://outerspace.stsci.edu/display/PANSTARRS/PS1+Filter+properties
+      photoCal.applyColorTerms: false # Applying color terms for filter='VR DECam c0007 6300.0 2600.0', config.photoCatName=ps1_pv3_3pi_20170110 because config.applyColorTerms is True
+
+  makeWarp:
+    class: lsst.pipe.tasks.makeWarp.MakeWarpTask
+    config:
+      doApplySkyCorr: false
+      doApplyExternalSkyWcs: false # requires finalVisitSummary input
+      doApplyExternalPhotoCalib: false # requires finalVisitSummary input
+      doApplyFinalizedPsf: false # requires finalVisitSummary input
+      connections.visitSummary: visitSummary
+
+  templateGen:
+    class: lsst.drp.tasks.assemble_coadd.CompareWarpAssembleCoaddTask
+    config:
+      doSelectVisits: false
+      assembleStaticSkyModel.doSelectVisits: false
+      statistic: MEANCLIP
+
+  subtractImages:
+    class: lsst.ip.diffim.subtractImages.AlardLuptonSubtractTask
+    config:
+      connections.difference: "differenceExp"
+
+contracts:
+  - templateGen.connections.coaddExposure == getTemplate.connections.coaddExposures
+  - getTemplate.connections.template == subtractImages.connections.template
+
+subsets:
+  calexp:
+    subset:
+    - isr
+    - characterizeImage
+    - calibrate
+    - consolidateVisitSummary
+  imdiff:
+    subset:
+      - makeWarp
+      - templateGen
+      - getTemplate
+      - subtractImages
