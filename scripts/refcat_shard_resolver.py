@@ -479,6 +479,8 @@ if __name__=="__main__":
     if importFile:
         from astropy.table import Table
         tbl = Table({"filename": paths, "htm7": ids})
-        relpath = "{REPO_NAME}" + os.path.basename(copyLoc) if copyLoc else "/"
+        relpath = "{ROOT}" + os.path.basename(copyLoc) if copyLoc else "/"
+        for row in tbl:
+            row["filename"] = row["filename"].replace(refcatLoc, f"{{ROOT}}/{aargs.ref_dataset_name}")
         tbl.write(os.path.join(importFile, f"{aargs.ref_dataset_name}.ecsv"))
 
