@@ -48,9 +48,10 @@ def get_exp_metadata(exposure):
         filterName = filterName,
     )
 
+
 def get_shard_filename(refcatConf, shardId):
     """Returns the name of the shard file."""
-    return f"{refcatConf.ref_dataset_name}_{shardId}_refcats_gen2.fits"
+    return f"{shardId}.fits"
 
 
 def get_shard_filepath(refcatConf, refcatLocation, shardId):
@@ -214,7 +215,7 @@ def resolve_calexp_shard_ids(refCatConf, exposure, pixelMargin=300, **kwargs):
     shard_ids : `list`
         IDs of reference catalog shards overlapping the region.
     """
-    # remove "detectors" kwargs to maintain compatibility 
+    # remove "detectors" kwargs to maintain compatibility
     # with DECam func
     _ = kwargs.pop("detectors", None)
     meta = get_exp_metadata(exposure)
@@ -227,8 +228,8 @@ def resolve_calexp_shard_ids(refCatConf, exposure, pixelMargin=300, **kwargs):
 
 def resolve_decamraw_shard_ids(refCatConf, fitsPath, detectors=None, pixelMargin=300, **kwargs):
     """Resolves IDs of shards overlapping an fits file.
-    
-    This functions is specifically tailored to handle 
+
+    This functions is specifically tailored to handle
     DECam raw FITS files, if you have FITS files with
     only 1 image look at `resolve_calexp_shard_ids`.
 
@@ -239,8 +240,8 @@ def resolve_decamraw_shard_ids(refCatConf, fitsPath, detectors=None, pixelMargin
     exposure : `lsst.afw.ExposureF`
         Image
     detectors : `list` or `None`
-        List of integer IDs of the detectors for which 
-        overlapping shards will be found. When `None` 
+        List of integer IDs of the detectors for which
+        overlapping shards will be found. When `None`
         uses all of the image-like detectors.
     pixelMargin: `int`
         Bounding box padding, in pixels. Default: 300.
@@ -295,8 +296,8 @@ def trim_gen3_exported_refcat_yaml(yamlpath, shard_ids):
     newyaml = metadata_match.stdout.decode()
 
     for shard_id in shard_ids:
-        # this could be a bit problematic because it 
-        # assumes htm - but no other refcats exist 
+        # this could be a bit problematic because it
+        # assumes htm - but no other refcats exist
         # anyhow, so whatever
         match = subprocess.run(
             ["grep", f"\- htm7: {shard_id}", "-B", "3", "-A", "2", yamlpath],
@@ -424,29 +425,21 @@ if __name__=="__main__":
         nargs="?", default=False, dest="copy"
     )
     parser.add_argument(
-        "--trim-exported-yaml",
+        "--import-file",
         help=(
-            "Path to the Data Butler Gen 3 exported reference catalog YAML from "
-            "which the the identified shard IDs will be trimmed from. "
+            "Create an ECSV file that can be ingested into the butler."
         ),
-        nargs="?", default=False, dest="trimYaml"
+        nargs="?", default=True, dest="import_file"
     )
-    parser.add_argument(
-        "--to-trimmed-yaml",
-        help="Location where the trimmed yaml is saved to. Default: $PWD.",
-        nargs="?", default=False, dest="toYaml"
-    )
-
 
     ##########
     # Logic
     ##########
     aargs = parser.parse_args()
 
-    copyLoc = resolve_input_meaning(aargs.copy, os.getcwd())
+    copyLoc = resolve_input_meaning(aargs.copy, os.path.join(os.getcwd(), aargs.ref_dataset_name))
     refcatLoc = resolve_input_meaning(aargs.refcatLoc, os.getcwd())
-    trimYaml = resolve_input_meaning(aargs.trimYaml, False)
-    toYaml = resolve_input_meaning(aargs.toYaml, False)
+    importFile = resolve_input_meaning(aargs.import_file, os.getcwd())
     if aargs.detectors is not None:
         detectors = [int(i) for i in aargs.detectors.split()]
 
@@ -483,15 +476,9 @@ if __name__=="__main__":
         # no copying was requested
         pass
 
-    if trimYaml:
-        newyaml = trim_gen3_exported_refcat_yaml(trimYaml, ids)
-        if toYaml:
-            if os.path.isdir(toYaml):
-                toYaml = os.path.join(toYaml, os.path.basename(trimYaml))
-            with open(toYaml, "w") as nyf:
-                nyf.write(newyaml)
-        else:
-            print()
-            print(newyaml)
-
+    if importFile:
+        from astropy.table import Table
+        tbl = Table({"filename": paths, "htm7": ids})
+        relpath = "{REPO_NAME}" + os.path.basename(copyLoc) if copyLoc else "/"
+        tbl.write(os.path.join(importFile, f"{aargs.ref_dataset_name}.ecsv"))
 

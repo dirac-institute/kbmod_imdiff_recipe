@@ -22,7 +22,7 @@ butler register-instrument dataRepo "lsst.obs.decam.DarkEnergyCamera"
 
 
 ###
-# IMPORT DATA 
+# IMPORT DATA
 ##
 
 # Import pre-created trimmed master calibration files
@@ -50,7 +50,7 @@ butler ingest-raws dataRepo trimmedRawData/210318/science/ --transfer link --out
 butler define-visits dataRepo "DECam" --collections "DECam/raw/20210318"
 
 mkdir -p processing_logs
-# First we correct the raw data for the cross-talk 
+# First we correct the raw data for the cross-talk
 # TODO: why is it critical that only detector=35 is provided?
 # if "instrument='DECam' and detector=35" is given it fails?
 pipetask run \
@@ -63,7 +63,7 @@ pipetask run \
     -j $J 2>&1 | tee processing_logs/crosstalk.log
 
 # Then we calibrate and characterize images (make calexps)
-# Use AP PIPE workflows because of all the config overrides: 
+# Use AP PIPE workflows because of all the config overrides:
 # https://github.com/lsst/ap_pipe/blob/main/config/DECam/characterizeImage.py
 pipetask --long-log run \
     -b dataRepo \
@@ -74,10 +74,10 @@ pipetask --long-log run \
     --register-dataset-types \
     -j $J 2>&1 | tee processing_logs/process_ccd.log
 
-# then we can create a skymap 
+# then we can create a skymap
 butler make-discrete-skymap dataRepo lsst.obs.decam.DarkEnergyCamera --collections "DECam/calexp/20210318" --skymap-id "skymap/20210318"
 
-# Now we build the coadds, we build imdiff templates 
+# Now we build the coadds, we build imdiff templates
 # out of these, these also build the warps
 pipetask run \
     -b dataRepo \
