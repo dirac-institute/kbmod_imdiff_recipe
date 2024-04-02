@@ -17,6 +17,11 @@ J=20
 # Creates the trimmedRefcats import files with correct paths to the shards
 # i.e. the gaia..._fixed.ecsv and ps1..._fixed.ecsv files.
 $SCRIPT_DIR/../trimmedRefcats/fix_relative_paths.py
+$SCRIPT_DIR/../trimmedRawData/fakes/fix_relative_paths.py
+
+# Add our tasks directory to PYTHONPATH
+__saved_path=$PYTHONPATH
+export PYTHONPATH="$SCRIPT_DIR/../python:$PYTHONPATH"
 
 # a directory to store logs for later review
 mkdir -p processing_logs
@@ -48,6 +53,13 @@ butler ingest-files dataRepo gaia_dr3_20230707 refcats/gaia_dr3_20230707 trimmed
 
 butler register-dataset-type dataRepo ps1_pv3_3pi_20170110 SimpleCatalog htm7
 butler ingest-files dataRepo ps1_pv3_3pi_20170110 refcats/ps1_pv3_3pi_20170110 trimmedRefcats/ps1_pv3_3pi_20170110_fixed.ecsv
+
+
+# DIFFERENT!!!
+# We register our data-table as a new dataset type and ingest the file into the repository
+butler register-dataset-type dataRepo raw_fakes Catalog
+butler ingest-files dataRepo raw_fakes fakes/raw trimmedRawData/fakes/fakes_fakeSrcCat_fixed.csv
+
 
 # put them in a common collection so it's easy to target later
 butler collection-chain dataRepo refcats refcats/gaia_dr3_20230707,refcats/ps1_pv3_3pi_20170110
@@ -89,16 +101,47 @@ pipetask --long-log run \
          --register-dataset-types \
          -j $J 2>&1 | tee processing_logs/raw_to_calexp.log
 
+
 # To create coadds, templates and imdiffs we need to know how to locate data on
 # the sky so we must create a skymap
 butler make-discrete-skymap dataRepo lsst.obs.decam.DarkEnergyCamera --collections "DECam/calexp/20210318" --skymap-id "skymap_20210318"
 
-# Finally we use the calibrated data and the skymap as inputs to tasks that will
-# produce warps, coadds and imdiffs.
+
+# DIFFERENT!!!
+# The ProcessCcdWithFakes uses skymap and tract names to match fakes with images
+# so we need to link each ingested fake data with its tract ID. This is just:
+# > tracts = skyMap.findTractIdArray(fakes['ra'], fakes['dec'], degrees=True)
+# really. This task is shipped by us - see python/tasks/partitionFakes.py
+pipetask --long-log run \
+         -b dataRepo \
+         -i "fakes/raw,skymaps" \
+         -o "DECam/fakes/partitioned" \
+         -p pipelines/fakes.yaml#partitionFakes \
+         --register-dataset-types \
+         -j $J 2>&1 | tee processing_logs/raw_to_calexp.log
+
+
+# DIFFERENT!!!
+# Then we can reprocess the calexps to add the fakes in it
+pipetask --long-log --log-level verbose run \
+         -b dataRepo \
+         -i "DECam/fakes/partitioned,DECam/calexp/20210318,skymaps" \
+         -o "DECam/withFakes/20210318" \
+         -p pipelines/fakes.yaml#insertFakes \
+         --register-dataset-types \
+         -j $J 2>&1 | tee processing_logs/raw_to_calexp.log
+
+
+# Finally it's the same step to prodice imdiffs, we just target the different
+# input collection
 pipetask run \
          -b dataRepo \
-         -i "DECam/calexp/20210318,skymaps" \
+         -i "DECam/withFakes/20210318,skymaps" \
          -o "DECam/imdiffs/20210318" \
          -p pipelines/simple.yaml#imdiff \
          --register-dataset-types \
          -j $J 2>&1 | tee processing_logs/calexp_to_imdiff.log
+
+# Admittedly this will only run when everything runs successfully, which isn't
+# guaranteed - but if-else everywhere hide the simplicity
+export PYTHONPATH=$__saved_path

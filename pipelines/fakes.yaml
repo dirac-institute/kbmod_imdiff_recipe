@@ -1,0 +1,81 @@
+description: |
+  A recipe of how to define a minimal task that will process
+  data from raw to image differences. The processing is broken
+  into 2 steps: calexp and imdiff.
+
+  Calexp step includes ISR, characterize and calibrate tasks and
+  consolidates the visit summary at the end.
+  After this step a skymap needs to be created for the following
+  step to work.
+  Imdiff step then takes data from Calexp step, creates warps,
+  templates (coadds) and then subtracts the templates from warps.
+imports:
+  - ${DRP_PIPE_DIR}/pipelines/DECam/DRP-Merian.yaml
+
+tasks:
+  calibrate:
+    class: lsst.pipe.tasks.calibrate.CalibrateTask
+    config:
+      astromRefObjLoader.anyFilterMapsToThis: "phot_g_mean"
+      photoRefObjLoader.filterMap:
+        VR: "r"
+      photoCal.applyColorTerms: false
+
+  partitionFakes:
+    class: tasks.partitionFakes.PartitionFakesTask
+
+  insertFakes:
+    class: lsst.pipe.tasks.processCcdWithFakes.ProcessCcdWithFakesTask
+    config:
+      connections.fakeCats: "partitioned_fakes"
+      connections.fakesType: "fakes_"
+      doMatchVisit: true
+      insertFakes.insertOnlyStars: true
+      insertFakes.doProcessAllDataIds: true
+
+  consolidateVisitSummary:
+    class: lsst.pipe.tasks.postprocess.ConsolidateVisitSummaryTask
+    config:
+      connections.calexp: "fakes_calexp"
+
+  makeWarp:
+    class: lsst.pipe.tasks.makeWarp.MakeWarpTask
+    config:
+      doApplySkyCorr: false
+      doApplyExternalSkyWcs: false # requires finalVisitSummary input
+      doApplyExternalPhotoCalib: false # requires finalVisitSummary input
+      doApplyFinalizedPsf: false # requires finalVisitSummary input
+      connections.visitSummary: visitSummary
+      connections.fakesType: "fakes_"
+
+  templateGen:
+    class: lsst.drp.tasks.assemble_coadd.CompareWarpAssembleCoaddTask
+    config:
+      doSelectVisits: false
+      assembleStaticSkyModel.doSelectVisits: false
+      statistic: MEANCLIP
+
+  subtractImages:
+    class: lsst.ip.diffim.subtractImages.AlardLuptonSubtractTask
+    config:
+      connections.fakesType: "fakes_"
+      connections.difference: "differenceExp"
+
+contracts:
+  - templateGen.connections.coaddExposure == getTemplate.connections.coaddExposures
+  - getTemplate.connections.template == subtractImages.connections.template
+  - partitionFakes.connections.partitionedFakes == insertFakes.connections.fakeCats
+
+subsets:
+  calexp:
+    subset:
+    - isr
+    - characterizeImage
+    - calibrate
+    - consolidateVisitSummary
+  imdiff:
+    subset:
+      - makeWarp
+      - templateGen
+      - getTemplate
+      - subtractImages
