@@ -8,11 +8,11 @@ from astropy.table import Table
 # 3 different targets, so we need to do some bookkeeping
 # start position, move distance, pix a day
 pos_in_field = {
-    "COSMOS-1": [100, 100, 0],
-    "COSMOS-2": [100, 100, 0],
-    "COSMOS-3": [100, 100, 0]
+    "COSMOS-1": [500, 500, 0],
+    "COSMOS-2": [500, 500, 0],
+    "COSMOS-3": [500, 500, 0]
 }
-dx, dy = 100, 100
+dx, dy = 200, 200
 
 ras, decs, visits = [], [], []
 for f in os.listdir("../210318/science"):
@@ -29,8 +29,8 @@ for f in os.listdir("../210318/science"):
 
     wcs = WCS(hdul[35].header)
     coord = wcs.pixel_to_world(x, y)
-    ras.append(coord.ra.radian)
-    decs.append(coord.dec.radian)
+    ras.append(coord.ra.deg)
+    decs.append(coord.dec.deg)
 
 # src cat matches the galsim catalog format
 srcCatData = Table(dict(

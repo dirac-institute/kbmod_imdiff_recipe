@@ -58,7 +58,7 @@ butler ingest-files dataRepo ps1_pv3_3pi_20170110 refcats/ps1_pv3_3pi_20170110 t
 # DIFFERENT!!!
 # We register our data-table as a new dataset type and ingest the file into the repository
 butler register-dataset-type dataRepo raw_fakes Catalog
-butler ingest-files dataRepo raw_fakes fakes/raw trimmedRawData/fakes/fakes_fakeSrcCat_fixed.csv
+butler ingest-files dataRepo raw_fakes DECam/fakes/raw trimmedRawData/fakes/fakes_fakeSrcCat_fixed.csv
 
 
 # put them in a common collection so it's easy to target later
@@ -106,7 +106,6 @@ pipetask --long-log run \
 # the sky so we must create a skymap
 butler make-discrete-skymap dataRepo lsst.obs.decam.DarkEnergyCamera --collections "DECam/calexp/20210318" --skymap-id "skymap_20210318"
 
-
 # DIFFERENT!!!
 # The ProcessCcdWithFakes uses skymap and tract names to match fakes with images
 # so we need to link each ingested fake data with its tract ID. This is just:
@@ -114,7 +113,7 @@ butler make-discrete-skymap dataRepo lsst.obs.decam.DarkEnergyCamera --collectio
 # really. This task is shipped by us - see python/tasks/partitionFakes.py
 pipetask --long-log run \
          -b dataRepo \
-         -i "fakes/raw,skymaps" \
+         -i "DECam/fakes/raw,skymaps" \
          -o "DECam/fakes/partitioned" \
          -p pipelines/fakes.yaml#partitionFakes \
          --register-dataset-types \
